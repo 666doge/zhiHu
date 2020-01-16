@@ -2,6 +2,7 @@ package session
 
 import (
 	"sync"
+	"encoding/json"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -21,16 +22,16 @@ type RedisSession struct {
 }
 
 func NewRedisSession (id string, pool *redis.Pool) *RedisSession {
-	s := &ReidisSession{
+	s := &RedisSession{
 		data: make(map[string]interface{}, 8),
 		id: id,
 		pool: pool,
-		flag: SessionFlagNone
+		flag: SessionFlagNone,
 	}
 	return s
 }
 
-func (rs *RedisSession) Set (key string, value interface{}) (err, error) {
+func (rs *RedisSession) Set (key string, value interface{}) (err error) {
 	rs.rwLock.Lock()
 	defer rs.rwLock.Unlock()
 
@@ -40,7 +41,7 @@ func (rs *RedisSession) Set (key string, value interface{}) (err, error) {
 }
 
 func (rs *RedisSession) LoadFromRedis() (err error) {
-	conn := r.pool.Get()
+	conn := rs.pool.Get()
 	reply, err := conn.Do("GET", rs.id)
 	if err != nil {
 		return
@@ -58,7 +59,7 @@ func (rs *RedisSession) LoadFromRedis() (err error) {
 	return
 }
 
-func (rs *RedisSession) Get (key string) (session Session, err error) {
+func (rs *RedisSession) Get (key string) (result interface{}, err error) {
 	rs.rwLock.Lock()
 	defer rs.rwLock.Unlock()
 
@@ -69,7 +70,7 @@ func (rs *RedisSession) Get (key string) (session Session, err error) {
 		}
 	}
 
-	value, ok := rs.data[key]
+	result, ok := rs.data[key]
 	if !ok {
 		err = ErrKeyNotExistInSession
 	}
@@ -84,8 +85,8 @@ func (rs *RedisSession) Del(key string) (err error) {
 	rs.rwLock.Lock()
 	defer rs.rwLock.Unlock()
 
-	r.flag = SessionFlagModify
-	delete(r.data, key)
+	rs.flag = SessionFlagModify
+	delete(rs.data, key)
 	return nil
 }
 
@@ -102,10 +103,10 @@ func (rs *RedisSession) Save()(err error) {
 		return
 	}
 
-	conn, err = rs.pool.Get()
-	if err != nil {
-		return
-	}
+	conn := rs.pool.Get()
+	// if err != nil {
+	// 	return
+	// }
 
 	_, err = conn.Do("SET", rs.id, string(data))
 	if err != nil {

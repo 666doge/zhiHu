@@ -16,6 +16,13 @@ type RedisSessionManager struct {
 	sessionMap map[string]Session
 }
 
+func NewRedisSessionManager () SessionManager {
+	m := &RedisSessionManager{
+		sessionMap: make(map[string]Session, 1024),
+	}
+	return m
+}
+
 func newPool(addr string, passwd string) *redis.Pool {
 	return &redis.Pool{
 		MaxIdle:     64,
@@ -39,29 +46,29 @@ func newPool(addr string, passwd string) *redis.Pool {
 			}
 			_, err := c.Do("PING")
 			return err
-		}
+		},
 	}
 }
 
-func (rsm *RedisSessionManager) Init(addr string, options ...string) {
+func (rsm *RedisSessionManager) Init(addr string, options ...string) error {
 	if len(options) > 0 {
 		rsm.passwd = options[0]
 	}
 	rsm.pool = newPool(addr, rsm.passwd)
 	rsm.addr = addr
-	return
+	return nil
 }
 
 func (rsm *RedisSessionManager) CreateSession() (session Session, err error) {
 	rsm.rwLock.Lock()
 	defer rsm.rwLock.Unlock()
 
-	uuid, err := uuid.NewV4()
-	if err != nil {
-		return
-	}
+	uuid := uuid.NewV4()
+	// if err != nil {
+	// 	return
+	// }
 	sessionId := uuid.String()
-	session := NewRedisSession()
+	session = NewRedisSession(sessionId, rsm.pool)
 	rsm.sessionMap[sessionId] = session
 
 	return

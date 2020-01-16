@@ -11,7 +11,7 @@ type MemorySessionManager struct {
 	rwLock sync.RWMutex
 }
 
-func NewMemorySessionManager() *MemorySessionManager {
+func NewMemorySessionManager() SessionManager {
 	sr := &MemorySessionManager{
 		sessionMap: make(map[string]Session, 1024),
 	}
@@ -26,10 +26,10 @@ func (sm *MemorySessionManager) CreateSession()(session Session, err error) {
 	sm.rwLock.Lock()
 	defer sm.rwLock.Unlock()
 
-	uuid, err := uuid.NewV4()
-	if err != nil {
-		return
-	}
+	uuid := uuid.NewV4()
+	// if err != nil {
+	// 	return
+	// }
 
 	sessionId := uuid.String()
 	session = NewMemorySession(sessionId)
