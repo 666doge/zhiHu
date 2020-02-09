@@ -3,7 +3,7 @@ package main
 import (
 	// "fmt"
 	"zhiHu/controller"
-	// "zhiHu/middlewares/account"
+	"zhiHu/middlewares/account"
 	"zhiHu/id_gen"
 	"zhiHu/db"
 	"zhiHu/session"
@@ -40,7 +40,6 @@ func initService() {
 	}
 
 	r := gin.Default()
-	// r.Use(account.Auth())
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
@@ -49,8 +48,11 @@ func initService() {
 	r.POST("/user/register", controller.UserRegister)
 	r.POST("/user/login", controller.UserLogin)
 
-	// qRouter := r.Group("/question", account.Auth())
-	// qRouter.POST("/detail", controller.CreateQuestion)
+	// qRouter := r.Group("/question")
+	qRouter := r.Group("/question", account.Auth())
+	{
+		qRouter.POST("/detail", controller.CreateQuestion)
+	}
 
 	r.Run()
 }

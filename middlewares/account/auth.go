@@ -4,6 +4,8 @@ import (
 	"zhiHu/session"
 	"zhiHu/util"
 	"net/http"
+	"errors"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -46,7 +48,7 @@ func ProcessRequest(c *gin.Context) {
 		c.Set(UserLoginStatus, int64(0))
 		return
 	}
-
+	
 	sessionId := cookie.Value
 	if len(sessionId) == 0 {
 		c.Set(UserId, int64(0))
@@ -82,7 +84,7 @@ func ProcessRequest(c *gin.Context) {
 
 func IsLogin(c *gin.Context) (isLogin bool) {
 	loginStatus, exists := c.Get(UserLoginStatus)
-	if exists {
+	if !exists {
 		return
 	}
 	loginStat, ok := loginStatus.(int64)
@@ -150,4 +152,18 @@ func ProcessResponse(c *gin.Context) {
 
 	http.SetCookie(c.Writer, cookie)
 	return	
+}
+
+func GetUserId(c *gin.Context) (userId int64, err error) {
+	userIdStr, exists := c.Get(UserId)
+	if !exists {
+		return
+	}
+
+	userId, ok := userIdStr.(int64)
+	if !ok {
+		err = errors.New(fmt.Sprintf("Failed to contert userId %v into int64", userId))
+		return
+	}
+	return
 }
