@@ -1,27 +1,36 @@
 package account
 
 import (
-	"fmt"
 	"zhiHu/session"
+	"zhiHu/util"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 const (
 	SessionName = "session"
-	CookieSessionId = "session_id"
 	UserId = "user_id"
 	UserLoginStatus = "user_status"
+	CookieSessionId = "session_id"
+	CookieMaxAge = 30 * 24 * 3600
 )
 
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context){
-		fmt.Println("授权成功")
+		
+		ProcessRequest(c)
+		if IsLogin(c) == false {
+			util.RespError(c, util.ErrCodeNotLogin)
+			c.Abort()
+			return
+		}
 		c.Next()
 	}
 }
 
-func processRequest(c *gin.Context) {
+
+func ProcessRequest(c *gin.Context) {
 	var userSession session.Session
 
 	defer func() {
@@ -31,7 +40,7 @@ func processRequest(c *gin.Context) {
 		c.Set(SessionName, userSession)
 	}()
 
-	cookie, err := c.Request.Cookie("CookieSessionId")
+	cookie, err := c.Request.Cookie(CookieSessionId)
 	if err != nil {
 		c.Set(UserId, int64(0))
 		c.Set(UserLoginStatus, int64(0))
@@ -84,4 +93,61 @@ func IsLogin(c *gin.Context) (isLogin bool) {
 		return
 	}
 	return true
+}
+
+func SetUserId(userId int64, ctx *gin.Context) {
+	var userSession session.Session
+	tempSession, exists := ctx.Get(SessionName)
+	if !exists {
+		return
+	}
+
+	userSession, ok := tempSession.(session.Session)
+	if !ok {
+		return
+	}
+
+	if userSession == nil {
+		return
+	}
+
+	userSession.Set(UserId, userId)
+}
+
+func ProcessResponse(c *gin.Context) {
+	var userSession session.Session
+	tempSession, exists := c.Get(SessionName)
+	if !exists {
+		return
+	}
+
+	userSession, ok := tempSession.(session.Session)
+	if !ok {
+		return
+	}
+
+	if userSession == nil {
+		return
+	}
+
+	if userSession.IsModify() == false {
+		return
+	}
+
+	err := userSession.Save()
+	if err != nil {
+		return
+	}
+
+	sessionId := userSession.GetId()
+	cookie := &http.Cookie{
+		Name: CookieSessionId,
+		Value: sessionId,
+		HttpOnly: true,
+		Path: "/",
+		MaxAge: CookieMaxAge,
+	}
+
+	http.SetCookie(c.Writer, cookie)
+	return	
 }

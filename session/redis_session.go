@@ -77,7 +77,7 @@ func (rs *RedisSession) Get (key string) (result interface{}, err error) {
 	return
 }
 
-func (rs *RedisSession) Id() string{
+func (rs *RedisSession) GetId() string{
 	return rs.id
 }
 
@@ -104,13 +104,13 @@ func (rs *RedisSession) Save()(err error) {
 	}
 
 	conn := rs.pool.Get()
-	// if err != nil {
-	// 	return
-	// }
-
 	_, err = conn.Do("SET", rs.id, string(data))
 	if err != nil {
 		return
 	}
 	return
+}
+
+func (rs *RedisSession) IsModify() bool {
+	return rs.flag == SessionFlagModify
 }

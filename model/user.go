@@ -7,8 +7,8 @@ const (
 
 type User struct {
 	UserId int64 `json:"userId" db:"user_id"`
-	Username string `json:"userName" db:"username"`
-	Nickname string `json:"nickName" db:"nick_name"`
+	UserName string `json:"userName" db:"username"`
+	NickName string `json:"nickName" db:"nick_name"`
 	Phone string `json:"phone" db:"phone"`
 	Password string `json:"password" db:"password"`
 	Email string `json:"email" db:"email"`

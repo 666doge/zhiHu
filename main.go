@@ -3,9 +3,10 @@ package main
 import (
 	// "fmt"
 	"zhiHu/controller"
-	"zhiHu/middlewares/account"
+	// "zhiHu/middlewares/account"
 	"zhiHu/id_gen"
 	"zhiHu/db"
+	"zhiHu/session"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,14 +26,19 @@ func initService() {
 		panic(err)
 	}
 
+	err = session.Init("memory", "")
+	if err != nil {
+		panic(err)
+	}
+
 	r := gin.Default()
-	r.Use(account.Auth())
+	// r.Use(account.Auth())
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})
 	})
 	r.POST("/user/register", controller.UserRegister)
-	// r.GET("/user/list", controller.GetUserList)
+	r.POST("/user/login", controller.UserLogin)
 	r.Run()
 }

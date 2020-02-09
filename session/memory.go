@@ -9,6 +9,7 @@ type MemorySession struct {
 	data map[string]interface{}
 	id string
 	rwLock sync.RWMutex
+	isModify bool
 }
 
 func NewMemorySession(id string) *MemorySession {
@@ -24,6 +25,7 @@ func (s *MemorySession) Set (key string, value interface{}) (err error) {
 	defer s.rwLock.Unlock()
 
 	s.data[key] = value
+	s.isModify = true
 	return
 }
 
@@ -44,9 +46,18 @@ func (s *MemorySession)Del (key string) (err error) {
 	defer s.rwLock.Unlock()
 
 	delete(s.data, key)
+	s.isModify = true
 	return
 }
 
 func (s *MemorySession) Save() (err error) {
 	return
+}
+
+func (s *MemorySession) IsModify() bool {
+	return s.isModify
+}
+
+func (s *MemorySession) GetId() string {
+	return s.id
 }

@@ -5,5 +5,7 @@ import (
 )
 
 var (
-	ErrCodeUserExist = errors.New("username exists")
+	ErrUserExist = errors.New("username exists")
+	ErrUserNotExist = errors.New("user not exists")
+	ErrUserPasswordWrong = errors.New("password is wrong")
 )

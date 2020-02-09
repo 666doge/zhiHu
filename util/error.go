@@ -6,6 +6,8 @@ const (
 	ErrCodeUserExist = 1002
 	ErrCodeServerBusy = 1003
 	ErrCodeUserNotExist = 1004
+	ErrCodeUserPasswordWrong = 1005
+	ErrCodeNotLogin = 1006
 )
 
 func GetMessage(code int) (message string) {
@@ -20,6 +22,10 @@ func GetMessage(code int) (message string) {
 		message = "服务器繁忙"
 	case ErrCodeUserNotExist:
 		message = "用户不存在"
+	case ErrCodeUserPasswordWrong:
+		message = "密码错误"
+	case ErrCodeNotLogin:
+		message = "用户未登录"
 	default:
 		message = "未知错误"
 	}

@@ -7,6 +7,7 @@ import(
 	"zhiHu/util"
 	"zhiHu/id_gen"
 	"zhiHu/db"
+	"zhiHu/middlewares/account"
 )
 
 func GetUserList(c *gin.Context) {
@@ -44,7 +45,7 @@ func UserRegister(c *gin.Context) {
 	}
 
 	err = db.Register(&userInfo)
-	if err == db.ErrCodeUserExist{
+	if err == db.ErrUserExist{
 		util.RespError(c, util.ErrCodeUserExist)
 		return
 	}
@@ -55,4 +56,47 @@ func UserRegister(c *gin.Context) {
 	}
 
 	util.RespSuccess(c, nil)
+}
+
+func UserLogin(c *gin.Context) {
+	account.ProcessRequest(c)
+	var err error
+	var userInfo model.User
+
+	defer func() {
+		if err != nil {
+			return
+		}
+		account.SetUserId(userInfo.UserId, c)
+
+		account.ProcessResponse(c)
+		util.RespSuccess(c, nil)
+	}()
+
+	err = c.BindJSON(&userInfo)
+	if err != nil {
+		util.RespError(c, util.ErrCodeParameter)
+		return
+	}
+
+	if len(userInfo.UserName) == 0 || len(userInfo.Password) == 0 {
+		util.RespError(c, util.ErrCodeParameter)
+		return
+	}
+
+	err = db.UserLogin(&userInfo)
+	if err == db.ErrUserNotExist {
+		util.RespError(c, util.ErrCodeUserNotExist)
+		return
+	}
+
+	if err == db.ErrUserPasswordWrong {
+		util.RespError(c, util.ErrCodeUserPasswordWrong)
+		return
+	}
+
+	if err != nil {
+		util.RespError(c, util.ErrCodeServerBusy)
+		return
+	}
 }
