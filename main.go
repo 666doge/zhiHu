@@ -7,6 +7,7 @@ import (
 	"zhiHu/id_gen"
 	"zhiHu/db"
 	"zhiHu/session"
+	"zhiHu/filter"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,12 +22,19 @@ func initService() {
 		panic(err)
 	}
 
+	// init mysql
 	err = db.Init("root:xsN231564@tcp(localhost:3306)/zhihu?parseTime=true")
 	if err != nil {
 		panic(err)
 	}
 
 	err = session.Init("memory", "")
+	if err != nil {
+		panic(err)
+	}
+
+	// init sensitive word filter
+	err = filter.Init("./filter/sensitiveWords.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -40,5 +48,9 @@ func initService() {
 	})
 	r.POST("/user/register", controller.UserRegister)
 	r.POST("/user/login", controller.UserLogin)
+
+	// qRouter := r.Group("/question", account.Auth())
+	// qRouter.POST("/detail", controller.CreateQuestion)
+
 	r.Run()
 }
