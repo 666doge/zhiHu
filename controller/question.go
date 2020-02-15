@@ -49,3 +49,14 @@ func CreateQuestion (c *gin.Context) {
 	util.RespSuccess(c, nil)
 	return
 }
+
+func GetQuestionList (c *gin.Context) {
+	var qList []*model.Question
+	qList, err := db.GetQuestionList()
+	if err != nil {
+		util.RespError(c, util.ErrCodeServerBusy)
+		return
+	}
+	util.RespSuccess(c, qList)
+	return
+}

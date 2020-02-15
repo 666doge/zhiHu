@@ -18,3 +18,12 @@ func CreateQuestion(q *model.Question) (err error) {
 	}
 	return
 }
+
+func GetQuestionList() (qList []*model.Question, err error) {
+	sqlStr := `select 
+			title, content, author_id, category_id, question_id
+		from question
+	`
+	err = DB.Select(&qList, sqlStr)
+	return
+}

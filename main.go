@@ -52,6 +52,7 @@ func initService() {
 	qRouter := r.Group("/question", account.Auth())
 	{
 		qRouter.POST("/detail", controller.CreateQuestion)
+		qRouter.GET("/list", controller.GetQuestionList)
 	}
 
 	r.Run()
