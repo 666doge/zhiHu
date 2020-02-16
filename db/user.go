@@ -4,6 +4,7 @@ import (
 	"zhiHu/model"
 	"zhiHu/util"
 	"database/sql"
+
 	// "github.com/jmoiron/sqlx"
 )
 
@@ -52,5 +53,11 @@ func UserLogin(user *model.User) (err error) {
 		return
 	}
 
+	return
+}
+
+func GetUserName(userId int64) (userName string, err error) {
+	sqlStr := `select username from user where user_id = ?`
+	err = DB.Get(&userName, sqlStr, userId)
 	return
 }

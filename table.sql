@@ -29,3 +29,14 @@ create table question (
     KEY `idx_category_id` (`category_id`) USING BTREE,
     KEY `idx_question_id` (`question_id`) USING BTREE
 )
+
+create table category (
+    id int(11) primary key auto_increment not null,
+    category_id int(10) unsigned not null,
+    category_name varchar(128) not null,
+    create_time timestamp not null default current_timestamp,
+    update_time timestamp null default current_timestamp on update current_timestamp,
+    UNIQUE key `idx_category_id` (category_id),
+    UNIQUE key  `idx_category_name` (category_name)
+)
+insert into category (id, category_id, category_name) values(1, 1, "科技")

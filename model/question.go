@@ -13,3 +13,9 @@ type Question struct {
 	Status int `json:"status" db:"status"`
 	CreateTime time.Time `json:"createTime" db:"create_time"`
 }
+
+type QuestionDetail struct {
+	Question *Question `json:"question"`
+	AuthorName string `json:"authorName"`
+	CategoryName string `json:"categoryName"`
+}

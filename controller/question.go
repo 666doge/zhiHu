@@ -2,12 +2,14 @@ package controller
 
 import (
 	"fmt"
+	"strconv"
 	"zhiHu/db"
 	"zhiHu/filter"
 	"zhiHu/util"
 	"zhiHu/model"
 	"zhiHu/id_gen"
 	"zhiHu/middlewares/account"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -59,4 +61,39 @@ func GetQuestionList (c *gin.Context) {
 	}
 	util.RespSuccess(c, qList)
 	return
+}
+
+func GetQuestionDetail (c *gin.Context) {
+	quesIdStr := c.Query("question_id")
+	quesId, err := strconv.ParseInt(quesIdStr, 10, 64)
+
+	question, err := db.GetQuestion(quesId)
+	if err == db.ErrNoRecord {
+		util.RespError(c, util.ErrCodeNoRecord)
+		return
+	}
+	if err != nil {
+		util.RespError(c, util.ErrCodeServerBusy)
+		return
+	}
+
+	cateName, err := db.GetCategoryName(int64(question.CategoryId))
+	if err != nil {
+		util.RespError(c, util.ErrCodeServerBusy)
+		return
+	}
+
+	authorName, err := db.GetUserName(int64(question.AuthorId))
+	if err != nil {
+		util.RespError(c, util.ErrCodeServerBusy)
+		return
+	}
+
+	questionDetail := &model.QuestionDetail{
+		Question: question,
+		CategoryName: cateName,
+		AuthorName: authorName,
+	}
+	util.RespSuccess(c, questionDetail)
+
 }

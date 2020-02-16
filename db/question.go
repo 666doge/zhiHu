@@ -1,7 +1,7 @@
 package db
 
 import (
-	// "database/sql"
+	"database/sql"
 	"zhiHu/model"
 	"fmt"
 )
@@ -27,3 +27,17 @@ func GetQuestionList() (qList []*model.Question, err error) {
 	err = DB.Select(&qList, sqlStr)
 	return
 }
+
+func GetQuestion(quesId int64) (question *model.Question, err error) {
+	question = &model.Question{}
+	sqlStr := `select
+			question_id, title, content, category_id, author_id, status, create_time
+		from question 
+		where question_id = ? `
+	err = DB.Get(question, sqlStr, quesId)
+	if err == sql.ErrNoRows {
+		err = ErrNoRecord
+	}
+	return
+}
+
