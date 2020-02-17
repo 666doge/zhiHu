@@ -7,7 +7,9 @@ import(
 	"zhiHu/util"
 	"zhiHu/id_gen"
 	"zhiHu/db"
-	"zhiHu/middlewares/account"
+	"zhiHu/session"
+	"net/http"
+	uuid "github.com/satori/go.uuid"
 )
 
 func GetUserList(c *gin.Context) {
@@ -59,7 +61,6 @@ func UserRegister(c *gin.Context) {
 }
 
 func UserLogin(c *gin.Context) {
-	account.ProcessRequest(c)
 	var err error
 	var userInfo model.User
 
@@ -67,9 +68,23 @@ func UserLogin(c *gin.Context) {
 		if err != nil {
 			return
 		}
-		account.SetUserId(userInfo.UserId, c)
-
-		account.ProcessResponse(c)
+		// 登录成功-设置cookie, 保存session
+		uuid := uuid.NewV4()
+		sessionId := uuid.String()
+		err := session.Set(sessionId, "user_id", userInfo.UserId)
+		if err != nil {
+			return
+		}
+	
+		cookie := &http.Cookie{
+			Name: "session_id",
+			Value: sessionId,
+			HttpOnly: true,
+			Path: "/",
+			MaxAge: 30 * 24 * 3600,
+		}
+	
+		http.SetCookie(c.Writer, cookie)
 		util.RespSuccess(c, nil)
 	}()
 

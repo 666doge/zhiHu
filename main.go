@@ -28,7 +28,8 @@ func initService() {
 		panic(err)
 	}
 
-	err = session.Init("memory", "")
+	// init reids
+	err = session.Init("localhost:6379", "")
 	if err != nil {
 		panic(err)
 	}

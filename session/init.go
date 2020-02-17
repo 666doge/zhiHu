@@ -2,28 +2,22 @@ package session
 
 import (
 	"fmt"
+
+	"github.com/go-redis/redis/v7"
 )
 
-var sessionMgr SessionManager
+var RedisClient *redis.Client
 
-func Init(sessionType string, addr string, options ...string) (err error) {
-	switch(sessionType) {
-	case "redis":
-		sessionMgr = NewRedisSessionManager()
-	case "memory":
-		sessionMgr = NewMemorySessionManager()
-	default:
-		err = fmt.Errorf("not support")
+func Init(addr string, options ...string) (err error){
+	RedisClient = redis.NewClient(&redis.Options{
+		Addr: addr,
+		Password: options[0],
+		DB: 0,  // use default DB
+	})
+
+	_, err = RedisClient.Ping().Result()
+	if err == nil {
+		fmt.Println("Initialize redis OK!!!")
 	}
-	sessionMgr.Init(addr, options...)
 	return
 }
-
-func CreateSession() (session Session, err error) {
-	return sessionMgr.CreateSession()
-}
-
-func Get(sessionId string) (session Session, err error) {
-	return sessionMgr.Get(sessionId)
-}
-
