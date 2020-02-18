@@ -23,6 +23,7 @@ func GetQuestionList() (qList []*model.Question, err error) {
 	sqlStr := `select 
 			title, content, author_id, category_id, question_id
 		from question
+		limit 5
 	`
 	err = DB.Select(&qList, sqlStr)
 	return

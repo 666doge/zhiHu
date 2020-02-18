@@ -59,7 +59,43 @@ func GetQuestionList (c *gin.Context) {
 		util.RespError(c, util.ErrCodeServerBusy)
 		return
 	}
-	util.RespSuccess(c, qList)
+
+	authorMap := map[int64]string{}
+	authorIdList := []int64{}
+	categoryMap := map[int64]string{}
+	categoryIdList := []int64{}
+	for _, q := range qList {
+		if _, ok := authorMap[q.AuthorId]; ok == false {
+			authorMap[q.AuthorId] = ""
+			authorIdList = append(authorIdList, q.AuthorId)
+		}
+		if _, ok := categoryMap[q.CategoryId]; ok == false {
+			categoryMap[q.CategoryId] = ""
+			categoryIdList = append(categoryIdList, q.CategoryId)
+		}
+	}
+
+	authorList, err := db.GetUserList(authorIdList)
+	categoryList, err := db.GetCategoryListById(categoryIdList)
+
+	qDetailList := []*model.QuestionDetail{}
+	for _, q := range qList {
+		qDetail := &model.QuestionDetail{
+			Question: q,
+		}
+		for _, a := range authorList {
+			if q.AuthorId == a.UserId {
+				qDetail.AuthorName = a.UserName
+			}
+		}
+		for _, c := range categoryList {
+			if q.CategoryId == c.CategoryId {
+				qDetail.CategoryName = c.CategoryName
+			}
+		}
+		qDetailList = append(qDetailList, qDetail)
+	}
+	util.RespSuccess(c, qDetailList)
 	return
 }
 

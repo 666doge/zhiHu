@@ -5,7 +5,7 @@ import (
 	"zhiHu/util"
 	"database/sql"
 
-	// "github.com/jmoiron/sqlx"
+	"github.com/jmoiron/sqlx"
 )
 
 const (
@@ -59,5 +59,16 @@ func UserLogin(user *model.User) (err error) {
 func GetUserName(userId int64) (userName string, err error) {
 	sqlStr := `select username from user where user_id = ?`
 	err = DB.Get(&userName, sqlStr, userId)
+	return
+}
+
+func GetUserList(userIdList []int64) (userList []*model.User, err error) {
+	sqlStr := `select user_id, username from user where user_id in (?)`
+
+	query, args, err := sqlx.In(sqlStr, userIdList)
+	if err != nil {
+		return
+	}
+	err = DB.Select(&userList, query, args...)
 	return
 }
