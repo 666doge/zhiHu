@@ -21,7 +21,7 @@ func CreateQuestion(q *model.Question) (err error) {
 
 func GetQuestionList() (qList []*model.Question, err error) {
 	sqlStr := `select 
-			title, content, author_id, category_id, question_id
+			title, content, author_id, category_id, question_id, create_time, status
 		from question
 		limit 5
 	`

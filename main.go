@@ -1,13 +1,16 @@
 package main
 
 import (
-	// "fmt"
+	"fmt"
 	"zhiHu/controller"
 	"zhiHu/middlewares/account"
+	"zhiHu/middlewares"
 	"zhiHu/id_gen"
 	"zhiHu/db"
 	"zhiHu/session"
 	"zhiHu/filter"
+	"zhiHu/util"
+	"zhiHu/logger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,6 +20,17 @@ func main(){
 }
 
 func initService() {
+	// init logger
+	logger.InitLogger("file", map[string]string {
+		"log_level": "file",
+		"log_path": util.GetWorkDirectory() + "/logs",
+		"log_name": "main",
+		"log_split_type": "size",
+		"log_split_size": "1024",
+	})
+	fmt.Println("init logger ok")
+
+	// init id generator
 	err := id_gen.Init(1)
 	if err != nil {
 		panic(err)
@@ -41,6 +55,7 @@ func initService() {
 	}
 
 	r := gin.Default()
+	r.Use(middlewares.Logger())
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",

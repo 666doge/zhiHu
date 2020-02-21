@@ -81,7 +81,7 @@ func GetQuestionList (c *gin.Context) {
 	qDetailList := []*model.QuestionDetail{}
 	for _, q := range qList {
 		qDetail := &model.QuestionDetail{
-			Question: q,
+			Question: *q,
 		}
 		for _, a := range authorList {
 			if q.AuthorId == a.UserId {
@@ -126,7 +126,7 @@ func GetQuestionDetail (c *gin.Context) {
 	}
 
 	questionDetail := &model.QuestionDetail{
-		Question: question,
+		Question: *question,
 		CategoryName: cateName,
 		AuthorName: authorName,
 	}

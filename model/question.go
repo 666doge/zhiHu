@@ -15,7 +15,7 @@ type Question struct {
 }
 
 type QuestionDetail struct {
-	Question *Question `json:"question"`
+	Question
 	AuthorName string `json:"authorName"`
 	CategoryName string `json:"categoryName"`
 }
