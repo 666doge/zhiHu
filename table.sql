@@ -40,3 +40,26 @@ create table category (
     UNIQUE key  `idx_category_name` (category_name)
 )
 insert into category (id, category_id, category_name) values(1, 1, "科技")
+
+create table question_answer_rel (
+    id bigint(20) primary key auto_increment not null,
+    question_id bigint(20) not null,
+    answer_id bigint(20) not null,
+    create_time timestamp null default current_timestamp,
+    UNIQUE key `id_question_answer` (question_id, answer_id)
+)
+
+create table answer (
+    id bigint(20) primary key auto_increment not null,
+    answer_id bigint(20) not null,
+    content text not null,
+    comment_count int(10) unsigned not null default '0',
+    voteup_count int(11) not null default '0',
+    author_id bigint(20) not null,
+    status tinyint(3) unsigned not null default '1',
+    can_comment tinyint(3) unsigned not null default '1',
+    create_time timestamp default current_timestamp,
+    update_time timestamp default current_timestamp on update current_timestamp,
+    UNIQUE key `idx_answer_id` (answer_id),
+    key `idx_author_id` (author_id)
+)

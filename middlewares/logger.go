@@ -3,7 +3,7 @@ package middlewares
 import (
 	"zhiHu/logger"
 	"time"
-	"fmt"
+	// "fmt"
 
 	"github.com/gin-gonic/gin"
 )
