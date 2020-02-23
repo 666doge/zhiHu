@@ -99,6 +99,7 @@ func GetAnswerList(c *gin.Context) {
 		for _, u := range userList {
 			if u.UserId == a.AuthorId {
 				answerDetail.AuthorName = u.UserName
+				answerDetail.QuestionId = questionId
 				break
 			}
 		}
@@ -115,4 +116,8 @@ func GetAnswerList(c *gin.Context) {
 	answerDetailList.TotalCount = totalCount
 
 	util.RespSuccess(c, answerDetailList)
+}
+
+func LikeAnswer(c *gin.Context) {
+	
 }

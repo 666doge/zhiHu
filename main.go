@@ -78,6 +78,13 @@ func initService() {
 	{
 		aRouter.POST("/add", controller.CreateAnswer)
 		aRouter.GET("/list", controller.GetAnswerList)
+		// aRouter.GET("/like", controller.LikeAnswer)
+	}
+
+	cRouter := r.Group("/comment", account.Auth())
+	{
+		cRouter.POST("/add", controller.CreateComment)
+		cRouter.GET("/list", controller.GetCommentList)
 	}
 
 	r.Run()

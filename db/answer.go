@@ -12,7 +12,7 @@ func CreateAnswer(answer *model.Answer, questionId int64) (err error) {
 		(answer_id, content, author_id)
 		values (?,?,?)
 	`
-	tx, err := DB.Begin()
+	tx, err := DB.Beginx()
 	if err != nil {
 		return
 	}
@@ -50,7 +50,11 @@ func GetAnswerIdList(questionId int64, pageSize int64, pageNo int64) (answerIds 
 }
 
 func GetAnswerList(answerIds []int64) (answerList []*model.Answer, err error) {
-	sqlStr := `select answer_id, content, author_id, comment_count, voteup_count, status, create_time from answer where answer_id in (?)`
+	sqlStr := `select 
+			answer_id, content, author_id, comment_count, voteup_count, status, create_time, update_time, can_comment
+		from answer 
+		where answer_id in (?)
+	`
 	query, args, err := sqlx.In(sqlStr, answerIds)
 	if err != nil {
 		logger.Error("sqlx.in failed, sqlstr:%v, err:%v", sqlStr, err)

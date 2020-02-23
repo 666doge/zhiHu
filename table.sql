@@ -63,3 +63,16 @@ create table answer (
     UNIQUE key `idx_answer_id` (answer_id),
     key `idx_author_id` (author_id)
 )
+
+create table comment (
+    id bigint(20) primary key auto_increment not null,
+    comment_id bigint(20) not null,
+    content text not null,
+    answer_id bigint(20) not null COMMENT '评论所属的答案id',
+    parent_id bigint(20) not null default '0' COMMENT '父comment_id, 为0时表示直接一级评论',
+    to_user_id bigint(20) not null default '0' COMMENT '评论的用户的id, 为0时表示 一级评论，没有用户id',
+    from_user_id bigint(20) not null COMMENT '发评论的用户的id',
+    is_del tinyint(3) not null default '0' COMMENT '是否被删除，0未被删除，1被删除',
+    create_time timestamp not null default current_timestamp,
+    key `idx_answer_id` (answer_id)
+)
