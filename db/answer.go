@@ -79,3 +79,9 @@ func GetAnswerCount(questionId int64) (answerCount int64, err error) {
 	}
 	return
 }
+
+func LikeAnswer(answerId int64) (err error) {
+	sqlStr := `update answer set voteup_count=voteup_count + 1 where answer_id = ?`
+	_, err = DB.Exec(sqlStr, answerId)
+	return
+}

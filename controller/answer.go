@@ -116,8 +116,18 @@ func GetAnswerList(c *gin.Context) {
 	answerDetailList.TotalCount = totalCount
 
 	util.RespSuccess(c, answerDetailList)
+	return
 }
 
 func LikeAnswer(c *gin.Context) {
-	
+	answerIdStr := c.Query("answerId")
+	answerId, _ := strconv.ParseInt(answerIdStr, 10, 64)
+	err := db.LikeAnswer(answerId)
+	if err != nil {
+		logger.Error("update like number failed, answerId: %v, err: %v", answerId, err)
+		util.RespError(c, util.ErrCodeServerBusy)
+		return
+	}
+	util.RespSuccess(c, nil)
+	return
 }

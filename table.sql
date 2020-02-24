@@ -76,3 +76,21 @@ create table comment (
     create_time timestamp not null default current_timestamp,
     key `idx_answer_id` (answer_id)
 )
+
+create table favorite_dir (
+    id bigint primary key auto_increment not null,
+    dir_id bigint not null,
+    dir_name varchar(128) not null,
+    user_id bigint not null,
+    key `idx_dir_name` (dir_name),
+    key `idx_user_id` (user_id)
+)
+
+create table favorite (
+    id bigint primary key auto_increment not null,
+    answer_id bigint not null,
+    dir_id bigint not null,
+    user_id bigint not null,
+    key `idx_dir_id` (dir_id),
+    key `idx_user_id` (user_id)
+)
