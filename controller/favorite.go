@@ -25,6 +25,11 @@ func CreateFavoriteDir(c *gin.Context) {
 	userId, err := account.GetUserId(c)
 	favoriteDir.UserId = userId
 	err = db.CreateFavoriteDir(&favoriteDir)
+	if err == db.ErrRecordExists {
+		logger.Error("dir name exsits, dir_name: %v, err: %v", favoriteDir.DirName, err)
+		util.RespError(c, util.ErrCodeRecordExists)
+		return
+	}
 	if err != nil {
 		logger.Error("insert favorite dir failed, err: %v", err)
 		util.RespError(c, util.ErrCodeServerBusy)
@@ -57,11 +62,33 @@ func CreateFavorite(c *gin.Context) {
 	}
 	favorite.UserId = userId
 	err = db.CreateFavorite(&favorite)
+	if err == db.ErrRecordExists {
+		logger.Error("the answer is already in favorite dir, favorite: %#v", favorite)
+		util.RespError(c, util.ErrCodeRecordExists)
+		return
+	}
 	if err != nil {
 		logger.Error("insert favorite failed, favorite: %v, err: %v", favorite, err)
 		util.RespError(c, util.ErrCodeServerBusy)
 		return
 	}
 	util.RespSuccess(c, nil)
+	return
+}
+
+func GetFavoriteDirList(c *gin.Context) {
+	userId, err := account.GetUserId(c)
+	if err != nil || userId == 0 {
+		logger.Error("get user id failed, userId: %v, err: %v", userId, err)
+		util.RespError(c, util.ErrCodeNotLogin)
+		return
+	}
+	dirList, err := db.GetFavoriteDirList(userId)
+	if err != nil {
+		logger.Error("get dir list failed, userId: %v, err: %v", userId, err)
+		util.RespError(c, util.ErrCodeServerBusy)
+		return
+	}
+	util.RespSuccess(c, dirList)
 	return
 }

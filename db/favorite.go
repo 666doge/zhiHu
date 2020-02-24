@@ -35,3 +35,9 @@ func CreateFavorite(favorite *model.Favorite) (err error) {
 	_, err = DB.Exec(sqlStr, favorite.AnswerId, favorite.DirId, favorite.UserId)
 	return
 }
+
+func GetFavoriteDirList(userId int64) (dirList []*model.FavoriteDir, err error) {
+	sqlStr := `select user_id, dir_id, dir_name from favorite_dir where user_id = ?`
+	err = DB.Select(&dirList, sqlStr, userId)
+	return
+}

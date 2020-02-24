@@ -91,7 +91,7 @@ func initService() {
 	{
 		fRouter.POST("/dir/add", controller.CreateFavoriteDir)
 		fRouter.POST("/add", controller.CreateFavorite)
-		// cRouter.GET("/list", controller.GetCommentList)
+		fRouter.GET("/dir/list", controller.GetFavoriteDirList)
 	}
 
 	r.Run()

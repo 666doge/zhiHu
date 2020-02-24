@@ -9,6 +9,7 @@ const (
 	ErrCodeUserPasswordWrong = 1005
 	ErrCodeNotLogin = 1006
 	ErrCodeNoRecord = 1007
+	ErrCodeRecordExists = 1008
 )
 
 func GetMessage(code int) (message string) {
@@ -29,6 +30,8 @@ func GetMessage(code int) (message string) {
 		message = "用户未登录"
 	case ErrCodeNoRecord:
 		message = "查无记录"
+	case ErrCodeRecordExists:
+		message = "记录已存在"
 	default:
 		message = "未知错误"
 	}
