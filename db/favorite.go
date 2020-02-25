@@ -41,3 +41,9 @@ func GetFavoriteDirList(userId int64) (dirList []*model.FavoriteDir, err error) 
 	err = DB.Select(&dirList, sqlStr, userId)
 	return
 }
+
+func GetFavoriteList(userId int64, dirId int64) (answerIdList []int64, err error) {
+	sqlStr := `select answer_id from favorite where user_id = ? and dir_id = ?`
+	err = DB.Select(&answerIdList, sqlStr, userId, dirId)
+	return 
+}

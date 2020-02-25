@@ -6,6 +6,7 @@ import(
 	"zhiHu/util"
 	"zhiHu/id_gen"
 	"zhiHu/db"
+	"strconv"
 	"zhiHu/middlewares/account"
 	"github.com/gin-gonic/gin"
 )
@@ -91,4 +92,36 @@ func GetFavoriteDirList(c *gin.Context) {
 	}
 	util.RespSuccess(c, dirList)
 	return
+}
+
+func GetFavoriteList(c *gin.Context) {
+	// 获取dirId
+	dirIdStr := c.Query("dirId")
+	dirId, _ := strconv.ParseInt(dirIdStr, 10, 64)
+	
+	// 获取userId
+	userId, err := account.GetUserId(c)
+	if err != nil || userId == 0{
+		logger.Error("get user id failed, userId: %v", userId)
+		util.RespError(c, util.ErrCodeNotLogin)
+		return
+	}
+	
+	// 取 answer id
+	answerIdList, err := db.GetFavoriteList(userId, dirId)
+	if err != nil {
+		logger.Error("get favorite list failed, userId: %v, dirId: %v", userId, dirId)
+		util.RespError(c, util.ErrCodeServerBusy)
+		return
+	}
+
+	// 取 answer list
+	answerList, err := db.GetAnswerList(answerIdList)
+	if err != nil {
+		logger.Error("get answer list failed, answerIds: %v, err: %v", answerIdList, err)
+		util.RespError(c, util.ErrCodeServerBusy)
+		return
+	}
+
+	util.RespSuccess(c, answerList)
 }
