@@ -3,6 +3,7 @@ module zhiHu
 go 1.12
 
 require (
+	github.com/Shopify/sarama v1.26.1
 	github.com/garyburd/redigo v1.6.0
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-redis/redis/v7 v7.1.0

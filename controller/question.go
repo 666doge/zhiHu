@@ -9,6 +9,7 @@ import (
 	"zhiHu/model"
 	"zhiHu/id_gen"
 	"zhiHu/middlewares/account"
+	"zhiHu/kafka"
 
 	"github.com/gin-gonic/gin"
 )
@@ -49,6 +50,7 @@ func CreateQuestion (c *gin.Context) {
 	}
 
 	util.RespSuccess(c, nil)
+	kafka.SendMessage("zhihu_question", question)
 	return
 }
 

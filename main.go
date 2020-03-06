@@ -11,6 +11,7 @@ import (
 	"zhiHu/filter"
 	"zhiHu/util"
 	"zhiHu/logger"
+	"zhiHu/kafka"
 
 	"github.com/gin-gonic/gin"
 )
@@ -54,6 +55,14 @@ func initService() {
 		panic(err)
 	}
 
+	// init kafka producer
+	err = kafka.InitProducer([]string{"localhost:9092"})
+	if err != nil {
+		panic(err)
+	}
+	// 添加 consumers
+	kafka.InitConsumers()
+
 	r := gin.Default()
 	r.Use(middlewares.Logger())
 	r.GET("/ping", func(c *gin.Context) {
@@ -95,5 +104,5 @@ func initService() {
 		fRouter.GET("/list", controller.GetFavoriteList)
 	}
 
-	r.Run()
+	r.Run(":8081")
 }
