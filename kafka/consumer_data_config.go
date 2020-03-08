@@ -1,7 +1,11 @@
 package kafka
 
 import (
-	"fmt"
+	// "fmt"
+	"zhiHu/es"
+	"zhiHu/model"
+	"zhiHu/logger"
+	"encoding/json"
 
 	"github.com/Shopify/sarama"
 )
@@ -17,7 +21,13 @@ var consumerList = []consumerConfig{
 		Addr: "localhost:9092",
 		Topic: "zhihu_question",
 		Handler: func(msg *sarama.ConsumerMessage){
-			fmt.Print("got question from kafka, msg: %v", msg)
+			var question model.Question
+			err := json.Unmarshal(msg.Value, &question)
+			if err != nil {
+				logger.Error("kafka: Unmarshal failed, err: %v", err)
+				return
+			}
+			es.InsertDoc("zhihu_question", msg.Value, question.QuestionId, question)
 			return
 		},
 	},
@@ -25,7 +35,14 @@ var consumerList = []consumerConfig{
 		Addr: "localhost:9092",
 		Topic: "zhihu_answer",
 		Handler: func(msg *sarama.ConsumerMessage){
-			fmt.Print("got answer from kafka, msg: %v", msg)
+			var answer model.Answer
+			err := json.Unmarshal(msg.Value, &answer)
+
+			if err != nil {
+				logger.Error("kafka: Unmarshal answer failed, err: %v", err)
+				return
+			}
+			es.InsertDoc("zhihu_answer", msg.Value, answer.AnswerId, answer)
 			return
 		},
 	},

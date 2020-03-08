@@ -12,6 +12,7 @@ import (
 	"zhiHu/util"
 	"zhiHu/logger"
 	"zhiHu/kafka"
+	"zhiHu/es"
 
 	"github.com/gin-gonic/gin"
 )
@@ -63,6 +64,9 @@ func initService() {
 	// 添加 consumers
 	kafka.InitConsumers()
 
+	// init es
+	es.Init()
+
 	r := gin.Default()
 	r.Use(middlewares.Logger())
 	r.GET("/ping", func(c *gin.Context) {
@@ -74,6 +78,7 @@ func initService() {
 	r.POST("/user/login", controller.UserLogin)
 
 	r.GET("/category/list", controller.GetCategoryList)
+	r.GET("/search", controller.Search)
 
 	// qRouter := r.Group("/question")
 	qRouter := r.Group("/question", account.Auth())

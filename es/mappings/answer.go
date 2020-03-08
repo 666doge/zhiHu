@@ -1,0 +1,48 @@
+package es_mappings
+
+const AnswerMap string= `
+{
+	"mappings":{
+		"properties":{
+			"answerId":{
+				"type":"long"
+			},
+			"authorId":{
+				"type":"long"
+			},
+			"canComment":{
+				"type":"long"
+			},
+			"commentCount":{
+				"type":"long"
+			},
+			"content":{
+				"type":"text",
+				"fields":{
+					"keyword":{
+						"type":"keyword",
+						"ignore_above":256
+					}
+				},
+				"analyzer":"ik_max_word",
+				"search_analyzer":"ik_max_word"
+			},
+			"createTime":{
+				"type":"date"
+			},
+			"questionId":{
+				"type":"long"
+			},
+			"status":{
+				"type":"long"
+			},
+			"updateTime":{
+				"type":"date"
+			},
+			"voteup_count":{
+				"type":"long"
+			}
+		}
+	}
+}
+`

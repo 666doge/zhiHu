@@ -1,0 +1,47 @@
+package es_mappings
+
+const QuestionMap string = `
+{
+	"mappings":{
+		"properties":{
+			"authorId":{
+				"type":"long"
+			},
+			"categoryId":{
+				"type":"long"
+			},
+			"content":{
+				"type":"text",
+				"fields":{
+					"keyword":{
+						"type":"keyword",
+						"ignore_above":256
+					}
+				},
+				"analyzer":"ik_max_word",
+				"search_analyzer":"ik_max_word"
+			},
+			"createTime":{
+				"type":"date"
+			},
+			"questionId":{
+				"type":"long"
+			},
+			"status":{
+				"type":"long"
+			},
+			"title":{
+				"type":"text",
+				"fields":{
+					"keyword":{
+						"type":"keyword",
+						"ignore_above":256
+					}
+				},
+				"analyzer":"ik_max_word",
+				"search_analyzer":"ik_max_word"
+			}
+		}
+	}
+}
+`
